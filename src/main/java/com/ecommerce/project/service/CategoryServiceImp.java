@@ -46,11 +46,9 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryDTO createCategory(@NotNull CategoryDTO categoryDTO) {
         Category category = modelMapper.map(categoryDTO, Category.class);
-        Category existingCategoryByName = categoryRepository.findByCategoryName(category.getCategoryName());
-        Optional<Category> existingCategoryByID = categoryRepository.findById(category.getCategoryId());
-        if (existingCategoryByName != null || existingCategoryByID.isPresent()) {
-            throw existingCategoryByID.isPresent() ? new APIException("Category with " + category.getCategoryId() + " already exists.")
-                    : new APIException("Category with " + category.getCategoryName() + " already exists.");
+        Optional<Category> existingCategoryByName = categoryRepository.findByCategoryName(category.getCategoryName());
+        if (existingCategoryByName.isPresent()) {
+            throw new APIException("Category with " + category.getCategoryName() + " already exists.");
         }
         Category savedCategory = categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryDTO.class);
